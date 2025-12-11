@@ -1,0 +1,7 @@
+(In .clinerules)
+- You are building "polyvian.com".
+- Use React, TypeScript, Vite for Frontend.
+- Use PHP, MySQL for Backend (deployed on X Server).
+- NEVER suggest running a Node.js server (Express/NestJS) for production.
+- Use 'dexie' for client-side storage and 'ts-fsrs' for spaced repetition.
+- Follow the "Local-First" architecture.
