@@ -100,6 +100,7 @@ a:hover {
 
 .flashcard-back {
   transform: rotateY(-180deg); /* 裏面は初期状態で裏返す */
+  overflow-y: auto; /* コンテンツが溢れる場合にスクロール可能にする */
 }
 
 /* カード表面のスタイル */
@@ -114,15 +115,13 @@ a:hover {
 .flashcard-compare-area-button {
   width: calc(100% - 40px); /* 左右のpadding分を引く */
   margin-top: 20px; /* 上部に余白を確保 */
-  /* position: absolute; を削除 */
-  /* bottom: 20px; */ /* position: absolute; がないため不要 */
-  background-color: #fff3e0; /* 薄いオレンジ */
-  border: 1px solid #ff9800; /* 注意を促すオレンジの枠線 */
+  background-color: #e6f7ff; /* 薄い青 */
+  border: 1px solid #1890ff; /* 青の枠線 */
   border-radius: 8px; /* 角を丸く */
   padding: 10px; /* 内側の余白 */
   text-align: center; /* テキスト中央揃え */
   font-size: 0.9em; /* フォントサイズ */
-  color: #e65100; /* 濃いオレンジの文字色 */
+  color: #0050b3; /* 濃い青の文字色 */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* 軽い影 */
   cursor: pointer;
   transition: background-color 0.2s ease;
@@ -131,7 +130,7 @@ a:hover {
 }
 
 .flashcard-compare-area-button:hover {
-  background-color: #ffe0b2; /* ホバー時の色 */
+  background-color: #bae7ff; /* ホバー時の色 */
 }
 
 /* モーダルオーバーレイのスタイル */
@@ -141,7 +140,7 @@ a:hover {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.5); /* 半透明の黒 */
   display: flex;
   justify-content: center;
   align-items: center;

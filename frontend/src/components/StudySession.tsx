@@ -11,7 +11,7 @@ const StudySession: React.FC = () => {
   const [currentCard, setCurrentCard] = useState<ICard | undefined>(undefined);
   const [queue, setQueue] = useState<ICard[]>([]);// 未学習・復習対象のカードキュー
   const [isCardFlipped, setIsCardFlipped] = useState(false); // カードが裏返っているかどうかの状態
-  const [similarCards, setSimilarCards] = useState<ICard[]>([]); // 類似語の単語リスト
+  const [similarCards, setSimilarCards] = useState<ICard[]>([]); // 類似語のカードリスト
 
   // カードの単語を読み上げる関数
   const speakWord = useCallback((word: string) => {
