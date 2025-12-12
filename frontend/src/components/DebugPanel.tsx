@@ -113,25 +113,9 @@ const DebugPanel: React.FC = () => {
   };
 
   return (
-    <div style={{
-      position: 'fixed',
-      bottom: '10px',
-      right: '10px',
-      backgroundColor: 'rgba(0,0,0,0.7)',
-      color: 'white',
-      padding: '10px',
-      borderRadius: '5px',
-      zIndex: 1000,
-    }}>
+    <div className="debug-panel">
       <h4>デバッグパネル</h4>
-      <button onClick={handleResetAndSeedDB} style={{
-        backgroundColor: '#f44336',
-        color: 'white',
-        border: 'none',
-        padding: '8px 12px',
-        borderRadius: '4px',
-        cursor: 'pointer',
-      }}>
+      <button onClick={handleResetAndSeedDB}>
         DBリセット & シード投入
       </button>
     </div>

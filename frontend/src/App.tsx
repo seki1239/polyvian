@@ -4,7 +4,7 @@ import DebugPanel from './components/DebugPanel'; // DebugPanelをインポー�
 
 const App: React.FC = () => {
   return (
-    <div className="App">
+    <div className="main-container"> {/* main-container クラスを適用 */}
       <StudySession />
       <DebugPanel /> {/* DebugPanelを配置 */}
     </div>

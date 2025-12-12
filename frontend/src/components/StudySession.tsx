@@ -116,8 +116,8 @@ const StudySession: React.FC = () => {
     // 次のカードを表示
     const nextQueue = queue.slice(1);
     setQueue(nextQueue);
+    setIsFlipped(false); // 次のカードに切り替える前に、カードを表面にリセット
     setCurrentCard(nextQueue[0]);
-    setIsFlipped(false);
   };
 
   const handleResetAndSeedDB = async () => {
@@ -153,15 +153,40 @@ const StudySession: React.FC = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '50px' }}>
       <Flashcard word={currentCard.word} meaning={currentCard.meaning} />
-      <button onClick={() => speakWord(currentCard.word)} style={{
-        marginTop: '10px',
-        padding: '10px 15px',
-        fontSize: '16px',
-        cursor: 'pointer',
-      }}>
+      <button
+        onClick={() => speakWord(currentCard.word)}
+        style={{
+          marginTop: '10px',
+          padding: '10px 15px',
+          fontSize: '16px',
+          cursor: 'pointer',
+          backgroundColor: 'transparent',
+          color: '#333333',
+          border: '1px solid #ccc',
+          borderRadius: '8px',
+        }}
+      >
         単語を読み上げる
       </button>
-      {isFlipped ? <RatingButtons onRate={handleRate} /> : <button onClick={() => setIsFlipped(true)}>Show Answer</button>}
+      {isFlipped ? (
+        <RatingButtons onRate={handleRate} />
+      ) : (
+        <button
+          onClick={() => setIsFlipped(true)}
+          style={{
+            marginTop: '10px',
+            padding: '10px 15px',
+            fontSize: '16px',
+            cursor: 'pointer',
+            backgroundColor: 'transparent',
+            color: '#333333',
+            border: '1px solid #ccc',
+            borderRadius: '8px',
+          }}
+        >
+          Show Answer
+        </button>
+      )}
     </div>
   );
 };
