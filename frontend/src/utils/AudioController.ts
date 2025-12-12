@@ -53,8 +53,14 @@ class AudioController {
       this.selectedVoice = englishVoices[0];
       console.log(`Selected default English voice: ${this.selectedVoice.name}`);
     } else {
-      console.warn('No English voices found.');
-      this.selectedVoice = null;
+      console.warn('No English voices found, falling back to any available voice or null.');
+      // デフォルトの'en-US'を優先的に選択する
+      this.selectedVoice = this.voices.find(voice => voice.lang === 'en-US') || this.voices[0] || null;
+      if (this.selectedVoice) {
+        console.log(`Fallback voice selected: ${this.selectedVoice.name}`);
+      } else {
+        console.warn('No voices available at all.');
+      }
     }
   }
 
@@ -91,15 +97,28 @@ class AudioController {
 
   public speak(text: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      if (!this.synth || !this.selectedVoice) {
-        console.warn('Speech synthesis not ready or no voice selected.');
-        reject('Speech synthesis not ready or no voice selected.');
+      if (!this.synth) {
+        console.warn('Speech synthesis not supported in this browser.');
+        reject('Speech synthesis not supported in this browser.');
         return;
+      }
+      
+      console.log("Playing text:", text); // デバッグログを追加
+
+      let voiceToUse = this.selectedVoice;
+      if (!voiceToUse) {
+        console.warn('No preferred voice selected, attempting to use default en-US voice.');
+        voiceToUse = this.voices.find(voice => voice.lang === 'en-US') || this.voices[0] || null;
+        if (!voiceToUse) {
+          console.error('No voices available for speech synthesis.');
+          reject('No voices available for speech synthesis.');
+          return;
+        }
       }
 
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.voice = this.selectedVoice;
-      utterance.lang = this.selectedVoice.lang;
+      utterance.voice = voiceToUse;
+      utterance.lang = voiceToUse.lang;
       utterance.rate = 1; // 速度
       utterance.pitch = 1; // ピッチ
 

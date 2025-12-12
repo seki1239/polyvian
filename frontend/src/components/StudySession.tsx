@@ -24,11 +24,16 @@ const StudySession: React.FC = () => {
 
     // 今日が期限のカードを取得 (due_dateが今日以前のカード)
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const cardsDueToday = await db.cards
+    // 期日が到来しているカード (due_dateが今日以前) または新規カード (state = 0) を取得
+    const cardsDueTodayOrNew = await db.cards
       .where('user_id')
       .equals(userId)
-      .and(card => card.due_date.getTime() <= today.getTime())
+      .filter(card => card.due_date.getTime() <= today.getTime() || card.state === State.New)
       .toArray();
+
+    // デバッグ用: 取得したカードの情報をログに出力
+    console.log("取得したカード:", cardsDueTodayOrNew);
+    const cardsDueToday = cardsDueTodayOrNew;
 
     // カードをランダムにシャッフル
     const shuffledCards = cardsDueToday.sort(() => Math.random() - 0.5);
