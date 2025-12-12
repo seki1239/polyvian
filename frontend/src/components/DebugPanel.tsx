@@ -41,14 +41,15 @@ const DebugPanel: React.FC = () => {
 
       if (user?.id) {
         const currentUserId: number = user.id; // user.id が number であることを保証
-        const cardsToAdd: ICard[] = masterData.map((data: any) => {
+        const cardsToAdd: ICard[] = masterData.map((data: MasterDataItem) => {
           const fsrsCard = createEmptyCard(now);
           return {
+            id: data.id, // ★ここを追加！JSONのIDを強制的に使用する
             user_id: currentUserId,
             word: data.word,
             definition: data.definition,
             sentence: data.sentence,
-            similar_ids: data.similar_ids,
+            similar_ids: data.similar_words_ids || data.similar_ids || [],
             due_date: fsrsCard.due,
             stability: fsrsCard.stability,
             difficulty: fsrsCard.difficulty,

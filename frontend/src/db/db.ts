@@ -3,6 +3,16 @@ import Dexie, { type Table } from 'dexie';
 import { type Card as FsrsCard, Rating, State, createEmptyCard } from 'ts-fsrs';
 import masterData from '../assets/master_data.json'; // 生成されたJSONデータをインポート
 
+// master_data.json の型定義
+interface MasterDataItem {
+  id: number;
+  word: string;
+  definition: string;
+  sentence: string;
+  similar_ids?: number[];
+  similar_words_ids?: number[]; // 古い形式の可能性を考慮
+}
+
 // カードの状態
 export type CardState = State; // ts-fsrsのState型を使用
 
@@ -108,15 +118,16 @@ class PolyvianDB extends Dexie {
     // カードデータが存在しない場合のみ作成
     if ((await this.cards.count()) === 0 && user?.id) {
       const currentUserId: number = user.id; // user.id が number であることを保証
-      const initialCards = masterData.map(data => {
+      const initialCards = masterData.map((data: MasterDataItem) => {
         // FSRSの初期カード状態を設定
         const fsrsCard: FsrsCard = createEmptyCard(now);
         return {
+          id: data.id, // ★ここを追加！JSONのIDを強制的に使用する
           user_id: currentUserId,
           word: data.word,
           definition: data.definition, // master_data.jsonからの定義
           sentence: data.sentence,     // master_data.jsonからの例文
-          similar_ids: data.similar_ids, // master_data.jsonからの類似語ID
+similar_ids: data.similar_words_ids || data.similar_ids || [], // master_data.jsonからの類似語ID。古い形式にも対応。
           due_date: fsrsCard.due,
           stability: fsrsCard.stability,
           difficulty: fsrsCard.difficulty,

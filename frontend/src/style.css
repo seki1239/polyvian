@@ -86,15 +86,16 @@ a:hover {
   backface-visibility: hidden;
   display: flex;
   flex-direction: column; /* 要素を縦に並べる */
-  justify-content: center;
-  align-items: center;
+  justify-content: space-between;
+  align-items: center; /* 中央揃えを維持 */
   border-radius: 16px;
   background-color: #ffffff;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-  padding: 20px 20px 80px 20px; /* 下部のパディングを増やす */
+  padding: 20px; /* 全体のパディングを均一に */
   box-sizing: border-box;
   color: #333333; /* デフォルトの文字色 */
+  overflow-y: auto; /* コンテンツがカードの高さを超えた場合にスクロール可能にする */
 }
 
 .flashcard-back {
@@ -110,24 +111,124 @@ a:hover {
   word-break: break-word;
 }
 
-.flashcard-compare-area {
-  position: absolute;
-  bottom: 20px; /* flashcard-backのpadding-bottomに合わせる */
-  left: 20px;  /* flashcard-backのpadding-leftに合わせる */
-  right: 20px; /* flashcard-backのpadding-rightに合わせる */
-  background-color: #fffbe6; /* 薄い黄色 */
-  border: 1px solid #ffcc00; /* 枠線 */
+.flashcard-compare-area-button {
+  width: calc(100% - 40px); /* 左右のpadding分を引く */
+  margin-top: 20px; /* 上部に余白を確保 */
+  /* position: absolute; を削除 */
+  /* bottom: 20px; */ /* position: absolute; がないため不要 */
+  background-color: #fff3e0; /* 薄いオレンジ */
+  border: 1px solid #ff9800; /* 注意を促すオレンジの枠線 */
   border-radius: 8px; /* 角を丸く */
   padding: 10px; /* 内側の余白 */
   text-align: center; /* テキスト中央揃え */
   font-size: 0.9em; /* フォントサイズ */
-  color: #a0522d; /* テキスト色 */
+  color: #e65100; /* 濃いオレンジの文字色 */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* 軽い影 */
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: normal; /* テキストが折り返されるように */
+  word-break: break-word; /* 長い単語でも改行 */
 }
 
-.flashcard-compare-area p {
-  margin: 0; /* pタグのデフォルトマージンをリセット */
-  line-height: 1.4;
+.flashcard-compare-area-button:hover {
+  background-color: #ffe0b2; /* ホバー時の色 */
+}
+
+/* モーダルオーバーレイのスタイル */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* モーダルコンテンツのスタイル */
+.modal-content {
+  background-color: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  max-width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideIn 0.3s ease-out;
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  color: #333333;
+  font-size: 1.5em;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.similar-card-detail {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px dashed #e0e0e0;
+}
+
+.similar-card-detail:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.similar-card-detail h4 {
+  color: #007bff;
+  font-size: 1.2em;
+  margin-top: 0;
+  margin-bottom: 5px;
+}
+
+.similar-card-detail p {
+  margin: 5px 0;
+  color: #555555;
+  line-height: 1.5;
+}
+
+.similar-card-detail strong {
+  color: #333333;
+}
+
+/* モーダルを閉じるボタン */
+.modal-close-button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1em;
+  margin-top: 20px;
+  display: block; /* 中央揃えのためにブロック要素に */
+  margin-left: auto;
+  margin-right: auto;
+  transition: background-color 0.2s ease;
+}
+
+.modal-close-button:hover {
+  background-color: #d32f2f;
+}
+
+/* アニメーション */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 /* カード裏面のスタイル */

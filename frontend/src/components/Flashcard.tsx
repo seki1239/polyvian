@@ -1,26 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { audioController } from '../utils/AudioController';
+import type { ICard } from '../db/db'; // ICardをdb.tsからインポート
 
 interface FlashcardProps {
   word: string;
   definition: string;
   sentence: string;
-  similarWords?: string[]; // 類似語の単語リストを追加
-  isInterleaving?: boolean; // インターリービングフラグを追加
+  similarCards?: ICard[]; // 類似語のICardリストに変更
+  isInterleaving?: boolean;
   isFlipped: boolean;
   onFlip: () => void;
 }
 
-const Flashcard: React.FC<FlashcardProps> = ({ word, definition, sentence, similarWords, isInterleaving, isFlipped, onFlip }) => {
+const Flashcard: React.FC<FlashcardProps> = ({ word, definition, sentence, similarCards, isInterleaving, isFlipped, onFlip }) => {
+  const [showSimilarWordsModal, setShowSimilarWordsModal] = useState(false);
+
   const handleCardClick = () => {
     onFlip();
   };
 
-  const handleSpeakClick = async (e: React.MouseEvent) => { // asyncを追加
-    e.stopPropagation(); // カードのフリップイベントが発火しないようにする
-    // iOSでのAudioContextをアクティブに保つ
+  const handleSpeakClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     await audioController.ensureAudioContextActive();
     audioController.speak(word);
+  };
+
+  const handleSimilarWordsClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowSimilarWordsModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowSimilarWordsModal(false);
   };
 
   return (
@@ -35,10 +46,25 @@ const Flashcard: React.FC<FlashcardProps> = ({ word, definition, sentence, simil
         <p className="flashcard-word-back">{word}</p>
         <p className="flashcard-definition-back">{definition}</p>
         {sentence && <p className="flashcard-sentence-back">例: {sentence}</p>}
-        {/* 例文の翻訳があればここに表示 */}
-        {similarWords && similarWords.length > 0 && (
-          <div className="flashcard-compare-area">
-            <p>⚠️ Compare with: {similarWords.join(', ')}</p>
+        {similarCards && similarCards.length > 0 && (
+          <button className="flashcard-compare-area-button" onClick={handleSimilarWordsClick}>
+            ⚠️ 類似語: {similarCards.map(card => card.word).join(', ')} (タップで確認)
+          </button>
+        )}
+
+        {showSimilarWordsModal && (
+          <div className="modal-overlay" onClick={handleCloseModal}>
+            <div className="modal-content" onClick={e => e.stopPropagation()}>
+              <h3>類似語詳細</h3>
+              {similarCards?.map(card => (
+                <div key={card.id} className="similar-card-detail">
+                  <h4>{card.word}</h4>
+                  <p><strong>意味:</strong> {card.definition}</p>
+                  <p><strong>例文:</strong> {card.sentence}</p>
+                </div>
+              ))}
+              <button className="modal-close-button" onClick={handleCloseModal}>閉じる</button>
+            </div>
           </div>
         )}
       </div>

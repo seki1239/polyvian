@@ -18,7 +18,18 @@ declare module 'virtual:pwa-register' {
   ): (reloadPage?: boolean) => Promise<void>
 }
 
+interface MasterDataItem {
+  id: number;
+  word: string;
+  definition: string;
+  sentence: string;
+  similar_ids?: number[];
+  similar_words_ids?: number[]; // 古い形式の可能性を考慮
+}
+
+interface ICard extends MasterDataItem {}
+
 declare module '*.json' {
-  const value: any; // JSONファイルの内容はany型として扱う
+  const value: MasterDataItem[];
   export default value;
 }

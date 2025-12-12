@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { db, type ICard } from '../db/db';
+import { db } from '../db/db';
+import type { ICard } from '../db/db';
 import { fsrs, type Card as FsrsCard, type Grade, State } from 'ts-fsrs';
 import Flashcard from './Flashcard';
 import RatingButtons from './RatingButtons';
@@ -10,7 +11,7 @@ const StudySession: React.FC = () => {
   const [currentCard, setCurrentCard] = useState<ICard | undefined>(undefined);
   const [queue, setQueue] = useState<ICard[]>([]);// 未学習・復習対象のカードキュー
   const [isCardFlipped, setIsCardFlipped] = useState(false); // カードが裏返っているかどうかの状態
-  const [similarWords, setSimilarWords] = useState<string[]>([]); // 類似語の単語リスト
+  const [similarCards, setSimilarCards] = useState<ICard[]>([]); // 類似語の単語リスト
 
   // カードの単語を読み上げる関数
   const speakWord = useCallback((word: string) => {
@@ -85,18 +86,18 @@ const StudySession: React.FC = () => {
     }
   }, [currentCard, isCardFlipped, speakWord]); // isCardFlippedも依存配列に追加
 
-  // currentCardにsimilar_idsがある場合、類似語の単語を取得
+  // currentCardにsimilar_idsがある場合、類似語カードを取得
   useEffect(() => {
-    const fetchSimilarWords = async () => {
+    const fetchSimilarCards = async () => {
       if (currentCard && currentCard.similar_ids && currentCard.similar_ids.length > 0) {
         const similarCardDetails = await db.cards.bulkGet(currentCard.similar_ids);
-        const fetchedSimilarWords = (similarCardDetails.filter(Boolean) as ICard[]).map(card => card.word);
-        setSimilarWords(fetchedSimilarWords);
+        const fetchedSimilarCards = similarCardDetails.filter(Boolean) as ICard[];
+        setSimilarCards(fetchedSimilarCards);
       } else {
-        setSimilarWords([]);
+        setSimilarCards([]);
       }
     };
-    fetchSimilarWords();
+    fetchSimilarCards();
   }, [currentCard]);
 
   const handleRate = async (rating: Grade) => {
@@ -195,7 +196,7 @@ const StudySession: React.FC = () => {
         word={currentCard.word}
         definition={currentCard.definition}
         sentence={currentCard.sentence}
-        similarWords={similarWords} // similarWordsを渡す
+        similarCards={similarCards} // similarCardsを渡す
         isInterleaving={currentCard.isInterleaving} // isInterleavingを渡す
         isFlipped={isCardFlipped}
         onFlip={handleFlip}
