@@ -6,14 +6,14 @@ interface FlashcardProps {
   word: string;
   definition: string;
   sentence: string;
-  similarCards?: ICard[]; // 類似語のICardリストに変更
+  similarCards?: ICard[];
   isInterleaving?: boolean;
   isFlipped: boolean;
   onFlip: () => void;
 }
 
 const Flashcard: React.FC<FlashcardProps> = ({ word, definition, sentence, similarCards, isInterleaving, isFlipped, onFlip }) => {
-  const [showSimilarWordsModal, setShowSimilarWordsModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const handleCardClick = () => {
     onFlip();
@@ -27,11 +27,11 @@ const Flashcard: React.FC<FlashcardProps> = ({ word, definition, sentence, simil
 
   const handleSimilarWordsClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setShowSimilarWordsModal(true);
+    setShowModal(true);
   };
 
   const handleCloseModal = () => {
-    setShowSimilarWordsModal(false);
+    setShowModal(false);
   };
 
   return (
@@ -47,12 +47,12 @@ const Flashcard: React.FC<FlashcardProps> = ({ word, definition, sentence, simil
         <p className="flashcard-definition-back">{definition}</p>
         {sentence && <p className="flashcard-sentence-back">例: {sentence}</p>}
         {similarCards && similarCards.length > 0 && (
-          <button className="flashcard-compare-area-button" onClick={handleSimilarWordsClick}>
+          <button className="flashcard-compare-button" onClick={handleSimilarWordsClick}>
             ⚠️ 類似語: {similarCards.map(card => card.word).join(', ')} (タップで確認)
           </button>
         )}
 
-        {showSimilarWordsModal && (
+        {showModal && (
           <div className="modal-overlay" onClick={handleCloseModal}>
             <div className="modal-content" onClick={e => e.stopPropagation()}>
               <h3>類似語詳細</h3>

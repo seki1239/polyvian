@@ -86,7 +86,7 @@ a:hover {
   backface-visibility: hidden;
   display: flex;
   flex-direction: column; /* 要素を縦に並べる */
-  justify-content: space-between;
+  justify-content: flex-start; /* 上から順に表示されるように変更 */
   align-items: center; /* 中央揃えを維持 */
   border-radius: 16px;
   background-color: #ffffff;
@@ -101,6 +101,7 @@ a:hover {
 .flashcard-back {
   transform: rotateY(-180deg); /* 裏面は初期状態で裏返す */
   overflow-y: auto; /* コンテンツが溢れる場合にスクロール可能にする */
+  justify-content: flex-start; /* 上から順に表示されるように変更 */
 }
 
 /* カード表面のスタイル */
@@ -112,25 +113,26 @@ a:hover {
   word-break: break-word;
 }
 
-.flashcard-compare-area-button {
-  width: calc(100% - 40px); /* 左右のpadding分を引く */
-  margin-top: 20px; /* 上部に余白を確保 */
-  background-color: #e6f7ff; /* 薄い青 */
-  border: 1px solid #1890ff; /* 青の枠線 */
-  border-radius: 8px; /* 角を丸く */
-  padding: 10px; /* 内側の余白 */
-  text-align: center; /* テキスト中央揃え */
-  font-size: 0.9em; /* フォントサイズ */
-  color: #0050b3; /* 濃い青の文字色 */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* 軽い影 */
+.flashcard-compare-button { /* クラス名を変更 */
+  /* position: absolute; を削除 */
+  margin-top: auto; /* コンテンツの最後に自然に配置 */
+  background-color: #e6f7ff; /* 優しい水色 */
+  color: #0050b3; /* 濃い青 */
+  border: 1px solid #1890ff;
+  border-radius: 8px;
+  padding: 10px;
+  width: 100%; /* 適度な幅 */
+  text-align: center;
+  font-size: 0.9em;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   cursor: pointer;
   transition: background-color 0.2s ease;
-  white-space: normal; /* テキストが折り返されるように */
-  word-break: break-word; /* 長い単語でも改行 */
+  white-space: normal;
+  word-break: break-word;
 }
 
-.flashcard-compare-area-button:hover {
-  background-color: #bae7ff; /* ホバー時の色 */
+.flashcard-compare-button:hover {
+  background-color: #bae7ff;
 }
 
 /* モーダルオーバーレイのスタイル */
@@ -344,7 +346,7 @@ a:hover {
 }
 
 /* 汎用的なbuttonスタイルからspeak-icon-buttonを除外 */
-button:not(.rating-button):not(.speak-icon-button) {
+button:not(.rating-button):not(.speak-icon-button):not(.flashcard-compare-button) {
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
@@ -406,7 +408,7 @@ button:not(.rating-button):not(.speak-icon-button):focus-visible {
   a:hover {
     color: #747bff;
   }
-  button:not(.rating-button):not(.speak-icon-button) {
+  button:not(.rating-button):not(.speak-icon-button):not(.flashcard-compare-button) {
     background-color: #f9f9f9;
   }
 }
