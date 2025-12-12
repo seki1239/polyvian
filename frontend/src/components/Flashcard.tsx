@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { audioController } from '../utils/AudioController';
 import type { ICard } from '../db/db'; // ICardをdb.tsからインポート
 
@@ -10,10 +10,10 @@ interface FlashcardProps {
   isInterleaving?: boolean;
   isFlipped: boolean;
   onFlip: () => void;
+  onShowSimilarWords: (cards: ICard[]) => void; // 新しいプロップを追加
 }
 
-const Flashcard: React.FC<FlashcardProps> = ({ word, definition, sentence, similarCards, isInterleaving, isFlipped, onFlip }) => {
-  const [showModal, setShowModal] = useState(false);
+const Flashcard: React.FC<FlashcardProps> = ({ word, definition, sentence, similarCards, isInterleaving, isFlipped, onFlip, onShowSimilarWords }) => {
 
   const handleCardClick = () => {
     onFlip();
@@ -27,11 +27,9 @@ const Flashcard: React.FC<FlashcardProps> = ({ word, definition, sentence, simil
 
   const handleSimilarWordsClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setShowModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
+    if (similarCards) {
+      onShowSimilarWords(similarCards); // 親の関数を実行
+    }
   };
 
   return (
@@ -48,24 +46,8 @@ const Flashcard: React.FC<FlashcardProps> = ({ word, definition, sentence, simil
         {sentence && <p className="flashcard-sentence-back">例: {sentence}</p>}
         {similarCards && similarCards.length > 0 && (
           <button className="flashcard-compare-button" onClick={handleSimilarWordsClick}>
-            ⚠️ 類似語: {similarCards.map(card => card.word).join(', ')} (タップで確認)
+            ⚠️ 類似語あり ({similarCards.length})
           </button>
-        )}
-
-        {showModal && (
-          <div className="modal-overlay" onClick={handleCloseModal}>
-            <div className="modal-content" onClick={e => e.stopPropagation()}>
-              <h3>類似語詳細</h3>
-              {similarCards?.map(card => (
-                <div key={card.id} className="similar-card-detail">
-                  <h4>{card.word}</h4>
-                  <p><strong>意味:</strong> {card.definition}</p>
-                  <p><strong>例文:</strong> {card.sentence}</p>
-                </div>
-              ))}
-              <button className="modal-close-button" onClick={handleCloseModal}>閉じる</button>
-            </div>
-          </div>
         )}
       </div>
     </div>
