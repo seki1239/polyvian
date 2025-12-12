@@ -66,7 +66,8 @@ a:hover {
   height: 200px;
   perspective: 1000px; /* 3Dフリップのために必要 */
   margin: 40px auto; /* 上下に余白を持たせ中央配置 */
-  cursor: pointer;
+  cursor: pointer; /* クリッカブルであることを示す */
+  position: relative; /* speak-icon-button のための基準 */
 }
 
 .flashcard-container.flipped .flashcard-front {
@@ -84,45 +85,106 @@ a:hover {
   position: absolute;
   backface-visibility: hidden;
   display: flex;
+  flex-direction: column; /* 要素を縦に並べる */
   justify-content: center;
   align-items: center;
   border-radius: 16px;
   background-color: #ffffff;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* アニメーションを滑らかに */
-  font-size: 24px;
-  color: #333333;
-  padding: 20px;
-  box-sizing: border-box; /* paddingを含めてwidth/heightを計算 */
+  transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  padding: 20px 20px 80px 20px; /* 下部のパディングを増やす */
+  box-sizing: border-box;
+  color: #333333; /* デフォルトの文字色 */
 }
 
 .flashcard-back {
   transform: rotateY(-180deg); /* 裏面は初期状態で裏返す */
 }
 
-.flashcard-front p,
-.flashcard-back p {
+/* カード表面のスタイル */
+.flashcard-word-front {
+  font-size: 2.5em; /* 英単語を大きく */
+  font-weight: bold;
   margin: 0;
   text-align: center;
-  word-break: break-word; /* 長い単語でも折り返す */
+  word-break: break-word;
 }
 
-.speak-button {
+.flashcard-compare-area {
   position: absolute;
-  bottom: 15px;
-  right: 15px;
-  background-color: transparent; /* 背景色を透明に */
-  border: 1px solid #ccc; /* 枠線を追加 */
-  font-size: 20px; /* アイコンサイズを調整 */
-  cursor: pointer;
-  color: #333333; /* 文字色を濃い黒に */
-  padding: 8px 12px; /* パディングを調整 */
-  line-height: 1;
-  border-radius: 8px; /* 角を丸くする */
+  bottom: 20px; /* flashcard-backのpadding-bottomに合わせる */
+  left: 20px;  /* flashcard-backのpadding-leftに合わせる */
+  right: 20px; /* flashcard-backのpadding-rightに合わせる */
+  background-color: #fffbe6; /* 薄い黄色 */
+  border: 1px solid #ffcc00; /* 枠線 */
+  border-radius: 8px; /* 角を丸く */
+  padding: 10px; /* 内側の余白 */
+  text-align: center; /* テキスト中央揃え */
+  font-size: 0.9em; /* フォントサイズ */
+  color: #a0522d; /* テキスト色 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* 軽い影 */
 }
 
-.speak-button:hover {
-  color: #007bff; /* ホバー時の色変更 */
+.flashcard-compare-area p {
+  margin: 0; /* pタグのデフォルトマージンをリセット */
+  line-height: 1.4;
+}
+
+/* カード裏面のスタイル */
+.flashcard-word-back {
+  font-size: 1.8em; /* 英単語を表面より少し小さく */
+  font-weight: bold;
+  margin-bottom: 5px;
+  text-align: center;
+  word-break: break-word;
+}
+
+.flashcard-definition-back {
+  font-size: 1.1em;
+  color: #333; /* 濃いめのグレー */
+  margin-top: 5px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.flashcard-sentence-back {
+  font-size: 0.9em;
+  font-style: italic;
+  color: #666; /* 少し薄い色 */
+  margin-top: 10px;
+  padding: 0 10px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.speak-icon-button {
+  position: absolute;
+  top: 10px; /* 右上に配置 */
+  right: 10px;
+  background-color: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #333333;
+  padding: 5px;
+  line-height: 1;
+  border-radius: 50%; /* 丸いボタン */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.speak-icon-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.flip-hint {
+  position: absolute;
+  bottom: 10px;
+  font-size: 0.7em;
+  color: #888;
+  opacity: 0.7;
 }
 
 .rating-buttons-container {
@@ -181,7 +243,8 @@ a:hover {
   color: #888;
 }
 
-button:not(.rating-button):not(.speak-button) { /* 既存のbuttonスタイルを評価ボタンと発音ボタン以外に適用 */
+/* 汎用的なbuttonスタイルからspeak-icon-buttonを除外 */
+button:not(.rating-button):not(.speak-icon-button) {
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
@@ -192,27 +255,27 @@ button:not(.rating-button):not(.speak-button) { /* 既存のbuttonスタイル�
   cursor: pointer;
   transition: border-color 0.25s;
 }
-button:not(.rating-button):not(.speak-button):hover {
+button:not(.rating-button):not(.speak-icon-button):hover {
   border-color: #646cff;
 }
-button:not(.rating-button):not(.speak-button):focus,
-button:not(.rating-button):not(.speak-button):focus-visible {
+button:not(.rating-button):not(.speak-icon-button):focus,
+button:not(.rating-button):not(.speak-icon-button):focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
 .debug-panel {
   position: fixed;
-  bottom: 20px; /* 少し上に移動 */
-  right: 20px; /* 少し左に移動 */
-  background-color: rgba(0, 0, 0, 0.6); /* 半透明度を少し上げる */
+  bottom: 20px;
+  right: 20px;
+  background-color: rgba(0, 0, 0, 0.6);
   color: white;
-  padding: 10px 15px; /* パディングを増やす */
-  border-radius: 10px; /* 角を少し丸くする */
+  padding: 10px 15px;
+  border-radius: 10px;
   z-index: 1000;
-  font-size: 0.9em; /* フォントサイズを少し大きく */
-  max-width: 180px; /* 少し幅を広げる */
+  font-size: 0.9em;
+  max-width: 180px;
   text-align: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 影を追加 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .debug-panel h4 {
@@ -239,12 +302,11 @@ button:not(.rating-button):not(.speak-button):focus-visible {
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
-    /* background-color: #ffffff; */ /* App全体の背景色で上書きされるため不要 */
   }
   a:hover {
     color: #747bff;
   }
-  button:not(.rating-button):not(.speak-button) {
+  button:not(.rating-button):not(.speak-icon-button) {
     background-color: #f9f9f9;
   }
 }

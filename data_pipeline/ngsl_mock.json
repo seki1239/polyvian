@@ -1,0 +1,102 @@
+[
+  {
+    "id": 1,
+    "word": "apple",
+    "definition": "果物の一種"
+  },
+  {
+    "id": 2,
+    "word": "banana",
+    "definition": "細長い黄色い果物"
+  },
+  {
+    "id": 3,
+    "word": "adapt",
+    "definition": "適応させる"
+  },
+  {
+    "id": 4,
+    "word": "adopt",
+    "definition": "採用する、養子にする"
+  },
+  {
+    "id": 5,
+    "word": "affect",
+    "definition": "影響を与える"
+  },
+  {
+    "id": 6,
+    "word": "effect",
+    "definition": "影響、効果"
+  },
+  {
+    "id": 7,
+    "word": "elicit",
+    "definition": "引き出す"
+  },
+  {
+    "id": 8,
+    "word": "illicit",
+    "definition": "不法な"
+  },
+  {
+    "id": 9,
+    "word": "complement",
+    "definition": "補完する"
+  },
+  {
+    "id": 10,
+    "word": "compliment",
+    "definition": "褒める"
+  },
+  {
+    "id": 11,
+    "word": "desert",
+    "definition": "砂漠、見捨てる"
+  },
+  {
+    "id": 12,
+    "word": "dessert",
+    "definition": "デザート"
+  },
+  {
+    "id": 13,
+    "word": "principle",
+    "definition": "原則"
+  },
+  {
+    "id": 14,
+    "word": "principal",
+    "definition": "主要な、校長"
+  },
+  {
+    "id": 15,
+    "word": "stationary",
+    "definition": "静止した"
+  },
+  {
+    "id": 16,
+    "word": "stationery",
+    "definition": "文房具"
+  },
+  {
+    "id": 17,
+    "word": "site",
+    "definition": "場所、敷地"
+  },
+  {
+    "id": 18,
+    "word": "cite",
+    "definition": "引用する"
+  },
+  {
+    "id": 19,
+    "word": "sight",
+    "definition": "視力、光景"
+  },
+  {
+    "id": 20,
+    "word": "bear",
+    "definition": "クマ、耐える"
+  }
+]

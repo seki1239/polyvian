@@ -1,6 +1,7 @@
 // frontend/src/db/db.ts
 import Dexie, { type Table } from 'dexie';
 import { type Card as FsrsCard, Rating, State, createEmptyCard } from 'ts-fsrs';
+import masterData from '../assets/master_data.json'; // 生成されたJSONデータをインポート
 
 // カードの状態
 export type CardState = State; // ts-fsrsのState型を使用
@@ -21,8 +22,9 @@ export interface ICard {
   id?: number; // IndexedDBでは++idで自動インクリメントされる
   user_id: number;
   word: string;
-  meaning: string;
-  example_sentence?: string;
+  definition: string;
+  sentence: string; // 例文
+  similar_ids: number[]; // 類似語IDリスト
   due_date: Date;
   // FSRSパラメータ
   // FSRS: Flexible Spaced Repetition Scheduler
@@ -39,6 +41,7 @@ export interface ICard {
   created_at: Date;
   updated_at: Date;
   sync_status: SyncStatus; // 同期状態を管理
+  isInterleaving?: boolean; // インターリービングフラグ
 }
 
 export interface IReviewLog {
@@ -71,9 +74,9 @@ class PolyvianDB extends Dexie {
 
   constructor() {
     super('PolyvianDB');
-    this.version(1).stores({
+    this.version(2).stores({
       users: '++id, username', // idは自動インクリメント、usernameはユニーク
-      cards: '++id, user_id, [user_id+due_date], sync_status', // id, user_id, 複合インデックス [user_id+due_date], sync_status
+      cards: '++id, user_id, word, [user_id+due_date], [user_id+state], sync_status', // id, user_id, word, 複合インデックス [user_id+due_date], [user_id+state], sync_status
       review_logs: '++id, card_id, user_id, sync_status', // id, card_id, user_id, sync_status
       sync_queue: '++id, table_name, operation', // id, table_name, operation
     });
@@ -104,42 +107,16 @@ class PolyvianDB extends Dexie {
 
     // カードデータが存在しない場合のみ作成
     if ((await this.cards.count()) === 0 && user?.id) {
-      const initialCards = [
-        {
-          word: 'Hello',
-          meaning: 'こんにちは',
-          example_sentence: 'Hello, how are you?',
-        },
-        {
-          word: 'World',
-          meaning: '世界',
-          example_sentence: 'The world is vast.',
-        },
-        {
-          word: 'Polyvian',
-          meaning: 'ポリビアン (固有名詞)',
-          example_sentence: 'Welcome to Polyvian!',
-        },
-        {
-          word: 'Learning',
-          meaning: '学習',
-          example_sentence: 'Learning is fun.',
-        },
-        {
-          word: 'TypeScript',
-          meaning: 'TypeScript (プログラミング言語)',
-          example_sentence: 'TypeScript adds types to JavaScript.',
-        },
-      ];
-
-      for (const cardData of initialCards) {
+      const currentUserId: number = user.id; // user.id が number であることを保証
+      const initialCards = masterData.map(data => {
         // FSRSの初期カード状態を設定
         const fsrsCard: FsrsCard = createEmptyCard(now);
-        await this.cards.add({
-          user_id: user.id,
-          word: cardData.word,
-          meaning: cardData.meaning,
-          example_sentence: cardData.example_sentence,
+        return {
+          user_id: currentUserId,
+          word: data.word,
+          definition: data.definition, // master_data.jsonからの定義
+          sentence: data.sentence,     // master_data.jsonからの例文
+          similar_ids: data.similar_ids, // master_data.jsonからの類似語ID
           due_date: fsrsCard.due,
           stability: fsrsCard.stability,
           difficulty: fsrsCard.difficulty,
@@ -147,15 +124,17 @@ class PolyvianDB extends Dexie {
           scheduled_days: fsrsCard.scheduled_days,
           reps: fsrsCard.reps,
           lapses: fsrsCard.lapses,
-          learning_steps: fsrsCard.learning_steps, // 新しく追加
-          state: fsrsCard.state, // CardStateをts-fsrsのState型に合わせたため、キャスト不要
+          learning_steps: fsrsCard.learning_steps,
+          state: fsrsCard.state,
           last_review: fsrsCard.last_review,
           created_at: now,
           updated_at: now,
-          sync_status: 'synced', // 初期データは同期済みとする
-        });
-      }
-      console.log(`${initialCards.length} initial cards added.`);
+          sync_status: 'synced' as SyncStatus,
+        };
+      });
+
+      await this.cards.bulkAdd(initialCards);
+      console.log(`${initialCards.length} cards added from master_data.json.`);
     } else {
       console.log("Database already contains data or user ID is missing, skipping seeding.");
     }

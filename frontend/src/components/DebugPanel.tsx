@@ -1,6 +1,7 @@
 import React from 'react';
-import { db, type ICard, type CardState } from '../db/db';
+import { db, type ICard, type CardState, type SyncStatus } from '../db/db'; // SyncStatusを型としてインポート
 import { createEmptyCard, Rating, State } from 'ts-fsrs';
+import masterData from '../assets/master_data.json'; // master_data.jsonをインポート
 
 const DebugPanel: React.FC = () => {
   const handleResetAndSeedDB = async () => {
@@ -10,15 +11,22 @@ const DebugPanel: React.FC = () => {
 
     try {
       console.log('データベースをクリア中...');
+      // DBへの接続を閉じる
+      db.close();
+      // すべてのテーブルをクリア
+      await db.delete(); // DBを削除
+      // 新しいDB接続を開く (Dexieは自動的に開く)
+      await db.open();
       await db.cards.clear();
       await db.review_logs.clear();
-      // 他のテーブルも必要に応じてクリア
+      await db.sync_queue.clear();
+      // usersテーブルはクリアしない (demo_userを残すため)
       console.log('データベースのクリアが完了しました。');
 
       console.log('初期データを投入中...');
       const now = new Date();
 
-      // ユーザーが存在しない場合のみ作成
+      // ユーザーが存在しない場合のみ作成 (db.tsと同じロジック)
       let user = await db.users.where('username').equals('demo_user').first();
       if (!user) {
         const userId = await db.users.add({
@@ -32,57 +40,15 @@ const DebugPanel: React.FC = () => {
       }
 
       if (user?.id) {
-        const initialCardsData = [
-          {
-            word: 'Hello',
-            meaning: 'こんにちは',
-            example_sentence: 'Hello, how are you?',
-          },
-          {
-            word: 'World',
-            meaning: '世界',
-            example_sentence: 'The world is vast.',
-          },
-          {
-            word: 'Polyvian',
-            meaning: 'ポリビアン (固有名詞)',
-            example_sentence: 'Welcome to Polyvian!',
-          },
-          {
-            word: 'Learning',
-            meaning: '学習',
-            example_sentence: 'Learning is fun.',
-          },
-          {
-            word: 'TypeScript',
-            meaning: 'TypeScript (プログラミング言語)',
-            example_sentence: 'TypeScript adds types to JavaScript.',
-          },
-          {
-            word: 'Database',
-            meaning: 'データベース',
-            example_sentence: 'This application uses IndexedDB as a local database.',
-          },
-          {
-            word: 'Dexie',
-            meaning: 'Dexie.js (IndexedDBラッパー)',
-            example_sentence: 'Dexie simplifies IndexedDB operations.',
-          },
-          {
-            word: 'React',
-            meaning: 'React (JavaScriptライブラリ)',
-            example_sentence: 'React is used for building user interfaces.',
-          },
-        ];
-
-        const cardsToAdd: ICard[] = [];
-        for (const cardData of initialCardsData) {
-          const fsrsCard = createEmptyCard(now); // FSRSの初期カード状態を生成
-          cardsToAdd.push({
-            user_id: user.id,
-            word: cardData.word,
-            meaning: cardData.meaning,
-            example_sentence: cardData.example_sentence,
+        const currentUserId: number = user.id; // user.id が number であることを保証
+        const cardsToAdd: ICard[] = masterData.map((data: any) => {
+          const fsrsCard = createEmptyCard(now);
+          return {
+            user_id: currentUserId,
+            word: data.word,
+            definition: data.definition,
+            sentence: data.sentence,
+            similar_ids: data.similar_ids,
             due_date: fsrsCard.due,
             stability: fsrsCard.stability,
             difficulty: fsrsCard.difficulty,
@@ -91,24 +57,25 @@ const DebugPanel: React.FC = () => {
             reps: fsrsCard.reps,
             lapses: fsrsCard.lapses,
             learning_steps: fsrsCard.learning_steps,
-            state: fsrsCard.state as CardState, // 型アサーション
+            state: fsrsCard.state as CardState,
             last_review: fsrsCard.last_review,
             created_at: now,
             updated_at: now,
-            sync_status: 'synced',
-          });
-        }
+            sync_status: 'synced' as SyncStatus,
+          };
+        });
+
         await db.cards.bulkAdd(cardsToAdd);
-        console.log(`${cardsToAdd.length}枚の初期カードを投入しました。`);
+        console.log(`${cardsToAdd.length}枚の初期カードを投入しました。(master_data.jsonより)`);
       } else {
         console.error('ユーザーIDが見つからないため、カードを投入できませんでした。');
       }
 
       alert('データベースのリセットと初期データの投入が完了しました。ページをリロードします。');
       window.location.reload(); // ページをリロードして変更を反映
-    } catch (error) {
+    } catch (error: any) {
       console.error('データベースのリセットと初期データの投入中にエラーが発生しました:', error);
-      alert('エラーが発生しました。詳細はコンソールを確認してください。');
+      alert(`エラーが発生しました: ${error.message}`);
     }
   };
 
