@@ -23,7 +23,7 @@ export type SyncStatus = 'synced' | 'pending';
 export interface IUser {
   id?: number; // IndexedDBでは++idで自動インクリメントされる
   username: string;
-  password_hash: string;
+  password_hash?: string; // バックエンドから常に返されるとは限らないためオプショナルに
   created_at: Date;
   updated_at: Date;
 }

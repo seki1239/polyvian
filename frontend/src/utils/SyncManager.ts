@@ -17,11 +17,18 @@ interface SyncResponse {
 }
 
 export class SyncManager {
-  private apiEndpoint: string;
   private currentUserId: number | null = null; // 現在のユーザーIDを保持
 
-  constructor(apiEndpoint: string) {
-    this.apiEndpoint = apiEndpoint;
+  // コンストラクタからapiEndpointを削除し、内部で環境変数から取得するように変更
+  constructor() {}
+
+  private getApiEndpoint(): string {
+    return import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+  }
+
+  // 同期APIのフルURLを生成するヘルパーメソッド
+  private getSyncApiUrl(): string {
+    return `${this.getApiEndpoint()}/sync.php`;
   }
 
   /**
@@ -54,11 +61,17 @@ export class SyncManager {
 
       console.log("SyncManager: Sending payload to backend:", payload);
 
-      const response = await fetch(this.apiEndpoint, {
-        method: 'POST',
-        headers: {
+      const token = localStorage.getItem('token');
+      const headers: HeadersInit = {
           'Content-Type': 'application/json',
-        },
+      };
+      if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch(this.getSyncApiUrl(), { // apiEndpointの代わりにgetSyncApiUrl()を使用
+        method: 'POST',
+        headers: headers,
         body: JSON.stringify(payload),
       });
 
