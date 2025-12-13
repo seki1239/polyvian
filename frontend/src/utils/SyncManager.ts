@@ -16,7 +16,7 @@ interface SyncResponse {
   new_sync_time: string;
 }
 
-export class SyncManager {
+export class ClientSyncManager {
   private currentUserId: number | null = null; // 現在のユーザーIDを保持
 
   // コンストラクタからapiEndpointを削除し、内部で環境変数から取得するように変更
@@ -177,3 +177,5 @@ export class SyncManager {
     }
   }
 }
+
+export const syncManager = new ClientSyncManager();

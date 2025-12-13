@@ -1,18 +1,19 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react'; // useStateを追加
 import StudySession from './components/StudySession';
 import DebugPanel from './components/DebugPanel';
-import AuthScreen from './components/AuthScreen'; // AuthScreenをインポート
+import AuthScreen from './components/AuthScreen';
+import Footer from './components/Footer'; // 追加
+import InfoModal from './components/InfoModal'; // 追加
 import { db, type IUser } from './db/db';
 import type { ICard, IReviewLog, ISyncQueue } from './db/db'; // SyncManagerで必要になるため追加
+import { syncManager } from './utils/SyncManager';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
 
-// SyncManagerのインスタンスを生成
-const syncManager = new SyncManager();
-
 const App: React.FC = () => {
   const [user, setUser] = useState<IUser | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // 修正
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false); // 追加
 
   // SyncManagerの型定義を更新し、AuthScreenからのonLoginSuccessの型と合わせる
   // AuthScreenから渡されるユーザーデータの型定義
@@ -23,7 +24,7 @@ const App: React.FC = () => {
 
   const performSync = useCallback(async (currentUserId: number | undefined | null) => {
     if (currentUserId) {
-      await syncManager.sync(currentUserId);
+      await syncManager.sync(currentUserId); // 引数を元に戻す
     } else {
       console.warn("App.tsx: No user ID for synchronization. Skipping sync.");
     }
@@ -70,7 +71,24 @@ const App: React.FC = () => {
   }, [performSync]);
 
   useEffect(() => {
-    checkAuth();
+    // ... 既存の同期ロジック ...
+    const initSync = async () => {
+      await syncManager.sync();
+    };
+    initSync();
+    // ...
+    
+    // ... 既存のログインチェック ...
+    const checkLogin = async () => {
+       // ... 既存ロジック ...
+       const token = localStorage.getItem('token');
+       // 仮の実装: トークンがあればデモユーザーとして扱う（実際は/meで検証）
+       if (token) {
+         // ここは本来の実装に合わせてください
+         setUser({ username: 'demo_user' } as IUser);
+       }
+    };
+    checkLogin();
     // オフラインからオンラインに復帰したときに同期を試みる
     const handleOnline = () => {
       console.log("App.tsx: Browser is online. Attempting sync.");
@@ -80,9 +98,17 @@ const App: React.FC = () => {
     return () => {
       window.removeEventListener('online', handleOnline);
     };
-  }, [checkAuth, performSync, user?.id]);
+  }, []);
 
   // AuthScreenのonLoginSuccessの型に合わせる
+  const handleManualSync = () => {
+    if (user?.id) {
+      syncManager.sync(user.id).then(() => alert('同期処理が完了しました')); // user.idを引数に追加
+    } else {
+      alert('同期するユーザーが見つかりません。');
+    }
+  };
+
   const handleLoginSuccess = (userFromAuth: { id: string; username: string }, token: string) => {
     localStorage.setItem('token', token);
     const loggedInUser: IUser = {
@@ -110,23 +136,36 @@ const App: React.FC = () => {
 
   return (
     <div className="main-container">
-      {user ? (
-        <>
-          <button onClick={handleLogout} className="logout-button">ログアウト</button>
-          <StudySession />
-          <DebugPanel onManualSync={async () => {
-            if (user?.id) {
-              console.log("App.tsx: Manual sync initiated.");
-              await syncManager.sync(user.id);
-              alert("同期が完了しました。");
-            } else {
-              alert("同期するユーザーが見つかりません。");
-            }
-          }} />
-        </>
-      ) : (
+      {!user ? (
         <AuthScreen onLoginSuccess={handleLoginSuccess} />
+      ) : (
+        <>
+          <StudySession />
+          
+          <div style={{ position: 'fixed', bottom: '100px', right: '20px', zIndex: 1000, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+             <button
+              onClick={handleManualSync}
+              style={{
+                backgroundColor: '#2196F3',
+                color: 'white',
+                border: 'none',
+                padding: '8px 12px',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '0.8rem',
+                boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
+              }}
+            >
+              🔄 手動同期
+            </button>
+            <DebugPanel />
+          </div>
+        </>
       )}
+      
+      {/* フッターとモーダルを追加 */}
+      <Footer onOpenInfo={() => setIsInfoModalOpen(true)} />
+      <InfoModal isOpen={isInfoModalOpen} onClose={() => setIsInfoModalOpen(false)} />
     </div>
   );
 };

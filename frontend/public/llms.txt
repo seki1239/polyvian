@@ -1,0 +1,22 @@
+# Project Name: CogniVocab
+
+## Summary
+FSRSアルゴリズムとインターリービング学習を採用したPWA英単語学習ツール。
+
+## Tech Stack
+- Frontend: React, TypeScript, Vite
+- Storage: Dexie.js (IndexedDB)
+- Spaced Repetition: ts-fsrs
+- Backend: PHP (on X Server), MySQL
+
+## Features
+- オフライン学習 (Offline First / PWA)
+- ローカル優先アーキテクチャ (Local-First Architecture)
+- 科学的学習法 (Scientific Learning Methods: FSRS + Interleaving)
+- 無料 (Free to use)
+- OSS (MIT License)
+
+## Data Source
+- NGSL (New General Service List)
+- Tatoeba Project (Example sentences)
+- Wiktionary / Kaikki.org (Definitions)
