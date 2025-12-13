@@ -36,6 +36,7 @@ body {
   overflow-y: auto; /* コンテンツがはみ出したらスクロール */
   display: flex;
   flex-direction: column;
+  padding-bottom: 100px; /* 評価ボタンの高さ分を確保 */
 }
 
 a {
@@ -333,17 +334,19 @@ a:hover {
 }
 
 .rating-buttons-container {
-  display: flex;
-  justify-content: center;
-  padding: 20px 10px;
-  position: sticky; /* 画面最下部に固定 */
+  position: fixed;
   bottom: 0;
-  background-color: #ffffff; /* 背景色を追加 */
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05); /* 上部に影 */
-  z-index: 10;
+  left: 50%; /* 画面中央寄せの基準 */
+  transform: translateX(-50%); /* 中央揃え */
   width: 100%;
-  max-width: 480px; /* main-containerの幅に合わせる */
-  box-sizing: border-box; /* paddingを含めて幅を計算 */
+  max-width: 480px; /* PC表示時に広がりすぎないように制限 */
+  padding: 20px 10px;
+  background-color: rgba(255, 255, 255, 0.95); /* 背景を少し透過させて読みやすく */
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 100; /* 最前面に */
+  box-sizing: border-box;
+  display: flex; /* flexboxを追加 */
+  justify-content: center; /* ボタンを中央に配置 */
 }
 
 .rating-button {
