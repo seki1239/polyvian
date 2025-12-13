@@ -203,7 +203,15 @@ const StudySession: React.FC = () => {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '50px' }}>
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      marginTop: '50px',
+      position: 'relative',
+      paddingBottom: '250px', // ★ここを追加。250pxあれば確実にボタンより上に表示できます
+      width: '100%' // 幅も明示
+    }}>
       <Flashcard
         key={currentCard.id}
         word={currentCard.word}
