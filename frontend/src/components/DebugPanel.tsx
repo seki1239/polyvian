@@ -3,7 +3,11 @@ import { db, type ICard, type CardState, type SyncStatus } from '../db/db'; // S
 import { createEmptyCard, Rating, State } from 'ts-fsrs';
 import masterData from '../assets/master_data.json'; // master_data.jsonをインポート
 
-const DebugPanel: React.FC = () => {
+interface DebugPanelProps {
+  onManualSync?: () => void; // 手動同期用のプロパティを追加
+}
+
+const DebugPanel: React.FC<DebugPanelProps> = ({ onManualSync }) => {
   const handleResetAndSeedDB = async () => {
     if (!window.confirm('本当にデータベースをリセットして初期データを投入しますか？')) {
       return;
@@ -86,6 +90,11 @@ const DebugPanel: React.FC = () => {
       <button onClick={handleResetAndSeedDB}>
         DBリセット & シード投入
       </button>
+      {onManualSync && (
+        <button onClick={onManualSync} style={{ marginLeft: '10px' }}>
+          手動同期
+        </button>
+      )}
     </div>
   );
 };
