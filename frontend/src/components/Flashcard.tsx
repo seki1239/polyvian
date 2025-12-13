@@ -11,9 +11,10 @@ interface FlashcardProps {
   isFlipped: boolean;
   onFlip: () => void;
   onShowSimilarWords: (cards: ICard[]) => void; // 新しいプロップを追加
+  cardState: string | ICard['state']; // cardStateを追加
 }
-
-const Flashcard: React.FC<FlashcardProps> = ({ word, definition, sentence, similarCards, isInterleaving, isFlipped, onFlip, onShowSimilarWords }) => {
+ 
+const Flashcard: React.FC<FlashcardProps> = ({ word, definition, sentence, similarCards, isInterleaving, isFlipped, onFlip, onShowSimilarWords, cardState }) => {
 
   const handleCardClick = () => {
     onFlip();
@@ -35,10 +36,12 @@ const Flashcard: React.FC<FlashcardProps> = ({ word, definition, sentence, simil
   return (
     <div className={`flashcard-container ${isFlipped ? 'flipped' : ''}`} onClick={handleCardClick}>
       <div className="flashcard-front">
+        <span className="card-status-badge">{cardState}</span> {/* ステータスバッジ */}
         <p className="flashcard-word-front">{word}</p>
         <button className="speak-icon-button" onClick={handleSpeakClick}>
           🔊
         </button>
+        <p className="tap-hint">Tap to flip</p> {/* 操作ヒント */}
       </div>
       <div className="flashcard-back">
         <p className="flashcard-word-back">{word}</p>

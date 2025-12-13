@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { db } from '../db/db';
 import type { ICard } from '../db/db';
 import { fsrs, type Card as FsrsCard, type Grade, State } from 'ts-fsrs';
@@ -12,7 +13,9 @@ const StudySession: React.FC = () => {
   const [queue, setQueue] = useState<ICard[]>([]);// 未学習・復習対象のカードキュー
   const [isCardFlipped, setIsCardFlipped] = useState(false); // カードが裏返っているかどうかの状態
   const [similarCards, setSimilarCards] = useState<ICard[]>([]); // 類似語のカードリスト
-
+  const [showSimilarWordsModal, setShowSimilarWordsModal] = useState(false); // モーダルの表示状態
+  const [modalSimilarCards, setModalSimilarCards] = useState<ICard[]>([]); // モーダルに表示する類似語カード
+ 
   // カードの単語を読み上げる関数
   const speakWord = useCallback((word: string) => {
     audioController.speak(word).catch(error => console.error("音声再生エラー:", error));
@@ -73,6 +76,16 @@ const StudySession: React.FC = () => {
     setQueue(studyQueue);
     setCurrentCard(studyQueue[0]);
     setIsCardFlipped(false); // 新しいカードをロードしたら表面にリセット
+  }, []);
+ 
+  const handleShowSimilarWords = useCallback((cards: ICard[]) => {
+    setModalSimilarCards(cards);
+    setShowSimilarWordsModal(true);
+  }, []);
+ 
+  const handleCloseSimilarWordsModal = useCallback(() => {
+    setShowSimilarWordsModal(false);
+    setModalSimilarCards([]);
   }, []);
 
   useEffect(() => {
@@ -200,9 +213,27 @@ const StudySession: React.FC = () => {
         isInterleaving={currentCard.isInterleaving} // isInterleavingを渡す
         isFlipped={isCardFlipped}
         onFlip={handleFlip}
+        onShowSimilarWords={handleShowSimilarWords} // 追加
+        cardState={currentCard.state} // cardStateを渡す
       />
       {isCardFlipped && <RatingButtons onRate={handleRate} />}
       <DebugPanel /> {/* DebugPanelをStudySessionの直下に配置 */}
+      {showSimilarWordsModal && createPortal( // createPortalでラップ
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>類似語</h3>
+            {modalSimilarCards.map(card => (
+              <div key={card.id} className="similar-card-detail">
+                <h4>{card.word}</h4>
+                <p><strong>意味:</strong> {card.definition}</p>
+                {card.sentence && <p><strong>例文:</strong> {card.sentence}</p>}
+              </div>
+            ))}
+            <button className="modal-close-button" onClick={handleCloseSimilarWordsModal}>閉じる</button>
+          </div>
+        </div>,
+        document.body // body直下にレンダリング
+      )}
     </div>
   );
 };

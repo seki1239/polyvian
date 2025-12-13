@@ -97,6 +97,10 @@ a:hover {
   color: #333333; /* デフォルトの文字色 */
   overflow-y: auto; /* コンテンツがカードの高さを超えた場合にスクロール可能にする */
 }
+ 
+.flashcard-front {
+  position: relative; /* 絶対配置の子要素のために必要 */
+}
 
 .flashcard-back {
   transform: rotateY(-180deg); /* 裏面は初期状態で裏返す */
@@ -131,6 +135,12 @@ a:hover {
   transition: background-color 0.2s ease;
   white-space: normal;
   word-break: break-word;
+}
+
+.flashcard-compare-area-button { /* 新しいクラス名 */
+  white-space: nowrap; /* テキストの折り返しを防ぐ */
+  z-index: 10; /* z-indexを指定して押しやすくする */
+  /* その他flashcard-compare-buttonのスタイルを継承または調整 */
 }
 
 .flashcard-compare-button:hover {
@@ -284,7 +294,36 @@ a:hover {
 .speak-icon-button:hover {
   background-color: rgba(0, 0, 0, 0.05);
 }
-
+ 
+/* カードステータスバッジのスタイル */
+.card-status-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: rgba(0, 0, 0, 0.1);
+  color: #333;
+  font-size: 0.7em;
+  padding: 4px 8px;
+  border-radius: 5px;
+  z-index: 1;
+}
+ 
+/* タップヒントのスタイル */
+.tap-hint {
+  position: absolute;
+  bottom: 15px;
+  font-size: 0.8em;
+  color: #888;
+  opacity: 0.7;
+  animation: pulse 1.5s infinite; /* 点滅アニメーション */
+}
+ 
+@keyframes pulse {
+  0% { opacity: 0.7; }
+  50% { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+ 
 .flip-hint {
   position: absolute;
   bottom: 10px;
