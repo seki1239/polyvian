@@ -47,22 +47,33 @@ const Flashcard: React.FC<FlashcardProps> = ({ word, definition, sentence, simil
   return (
     <div className={`flashcard-container ${isFlipped ? 'flipped' : ''}`} onClick={handleCardClick}>
       <div className="flashcard-front">
-        <span className="card-status-badge">{getLabelForState(cardState)}</span> {/* ステータスバッジ */}
-        <p className="flashcard-word-front">{word}</p>
-        <button className="speak-icon-button" onClick={handleSpeakClick}>
-          🔊
-        </button>
-        <p className="tap-hint">Tap to flip</p> {/* 操作ヒント */}
+        <div className="card-header">
+          <span className="card-status-badge">{getLabelForState(cardState)}</span>
+          <button className="speak-icon-button" onClick={handleSpeakClick}>🔊</button>
+        </div>
+        <div className="card-content">
+          <p className="flashcard-word-front">{word}</p>
+        </div>
+        <div className="card-footer">
+          <p className="tap-hint">Tap to flip</p>
+        </div>
       </div>
       <div className="flashcard-back">
-        <p className="flashcard-word-back">{word}</p>
-        <p className="flashcard-definition-back">{definition}</p>
-        {sentence && <p className="flashcard-sentence-back">例: {sentence}</p>}
-        {similarCards && similarCards.length > 0 && (
-          <button className="flashcard-compare-button" onClick={handleSimilarWordsClick}>
-            ⚠️ 類似語あり ({similarCards.length})
-          </button>
-        )}
+        <div className="card-header">
+          {/* 裏面ヘッダーには現状コンテンツがないため空だが、将来的な拡張のために残す */}
+        </div>
+        <div className="card-content">
+          <p className="flashcard-word-back">{word}</p>
+          <p className="flashcard-definition-back">{definition}</p>
+          {sentence && <p className="flashcard-sentence-back">例: {sentence}</p>}
+        </div>
+        <div className="card-footer">
+          {similarCards && similarCards.length > 0 && (
+            <button className="flashcard-similar-button" onClick={handleSimilarWordsClick}>
+              類似語 ({similarCards.length})
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
