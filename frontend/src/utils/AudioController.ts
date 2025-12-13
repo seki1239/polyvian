@@ -80,11 +80,17 @@ class AudioController {
     }, { once: true });
   }
 
-  private playSilentTrack() {
+  private playSilentTrack(forceNew = false) {
     if (!this.isIOS || !this.audioContext) return;
 
     // 無音の短いオーディオバッファを作成し再生する
-    if (this.audioContext.state === 'running' && !this.silentTrackSource) {
+    // forceNewがtrueの場合、既存のsilentTrackSourceがあっても新しいものを生成
+    if (this.audioContext.state === 'running' && (forceNew || !this.silentTrackSource)) {
+      if (this.silentTrackSource) {
+        this.silentTrackSource.stop();
+        this.silentTrackSource.disconnect();
+        this.silentTrackSource = null;
+      }
       const buffer = this.audioContext.createBuffer(1, 1, 22050); // 1サンプル、モノラル
       this.silentTrackSource = this.audioContext.createBufferSource();
       this.silentTrackSource.buffer = buffer;
@@ -95,12 +101,43 @@ class AudioController {
     }
   }
 
-  public speak(text: string): Promise<void> {
+  // AudioContextがアクティブであることを保証する公開メソッド
+  public ensureAudioContextActive(): Promise<void> {
     return new Promise((resolve, reject) => {
+      if (!this.isIOS || !this.audioContext) {
+        resolve(); // iOSでない、またはAudioContextがない場合は何もしない
+        return;
+      }
+      if (this.audioContext.state === 'suspended') {
+        this.audioContext.resume().then(() => {
+          console.log('AudioContext resumed via ensureAudioContextActive.');
+          this.playSilentTrack(true); // 新しいサイレントトラックを再生してアクティブを維持
+          resolve();
+        }).catch(error => {
+          console.error('Error resuming AudioContext via ensureAudioContextActive:', error);
+          reject(error);
+        });
+      } else {
+        this.playSilentTrack(true); // 常に新しいサイレントトラックを再生
+        resolve();
+      }
+    });
+  }
+
+  public speak(text: string): Promise<void> {
+    return new Promise(async (resolve, reject) => { // asyncを追加
       if (!this.synth) {
         console.warn('Speech synthesis not supported in this browser.');
         reject('Speech synthesis not supported in this browser.');
         return;
+      }
+
+      // speakの直前にAudioContextをアクティブに保つための処理を呼び出す
+      try {
+        await this.ensureAudioContextActive();
+      } catch (error) {
+        console.error('Failed to ensure AudioContext active before speech:', error);
+        // エラーが発生しても、音声合成は試行する
       }
       
       console.log("Playing text:", text); // デバッグログを追加

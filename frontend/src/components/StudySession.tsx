@@ -207,7 +207,7 @@ const StudySession: React.FC = () => {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      marginTop: '50px',
+      marginTop: '10px',
       position: 'relative',
       paddingBottom: '250px', // ★ここを追加。250pxあれば確実にボタンより上に表示できます
       width: '100%' // 幅も明示

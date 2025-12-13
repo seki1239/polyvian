@@ -66,7 +66,7 @@ a:hover {
   width: 320px;
   height: 400px;
   perspective: 1000px; /* 3Dフリップのために必要 */
-  margin: 40px auto; /* 上下に余白を持たせ中央配置 */
+  margin: 20px auto; /* 上下に余白を持たせ中央配置 */
   cursor: pointer; /* クリッカブルであることを示す */
   position: relative; /* speak-icon-button のための基準 */
 }
@@ -107,7 +107,8 @@ a:hover {
   transform: rotateY(-180deg); /* 裏面は初期状態で裏返す */
   overflow-y: auto; /* コンテンツが溢れる場合にスクロール可能にする */
   justify-content: flex-start; /* 上から順に表示されるように変更 */
-  padding-top: 30px; /* 新しいパディングを追加 */
+  align-items: center; /* 中央揃えを維持 */
+  padding-top: 20px; /* 新しいパディングを追加 */
 }
 
 /* カード表面のスタイル */
@@ -249,6 +250,7 @@ a:hover {
 .flashcard-word-back {
   font-size: 1.8em; /* 英単語を表面より少し小さく */
   font-weight: bold;
+  margin-top: 0; /* 追加 */
   margin-bottom: 5px;
   text-align: center;
   word-break: break-word;
@@ -257,7 +259,7 @@ a:hover {
 .flashcard-definition-back {
   font-size: 1.1em;
   color: #333; /* 濃いめのグレー */
-  margin-top: 5px;
+  margin-top: 10px;
   margin-bottom: 10px;
   text-align: center;
 }
