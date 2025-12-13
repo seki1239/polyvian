@@ -37,14 +37,15 @@ export class ClientSyncManager {
    * @param userId 同期を実行するユーザーのID。必須。
    * @returns 同期が成功したかどうかを示す真偽値。
    */
-  public async sync(userId: number): Promise<boolean> {
+  public async sync(): Promise<boolean> {
+    const userId = localStorage.getItem('user_id');
     if (!userId) {
-      console.error("SyncManager: User ID is required for synchronization.");
+      console.warn('Sync skipped: No user ID found in localStorage.');
       return false;
     }
-    this.currentUserId = userId; // ユーザーIDをセット
+    this.currentUserId = parseInt(userId, 10); // ユーザーIDをセット
 
-    console.log("SyncManager: Starting synchronization...");
+    console.log("SyncManager: Starting synchronization for user:", this.currentUserId);
 
     try {
       // 1. localStorageから前回の同期時刻を取得

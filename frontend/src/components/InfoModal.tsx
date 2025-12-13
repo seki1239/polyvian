@@ -13,28 +13,38 @@ const InfoModal: React.FC<InfoModalProps> = ({ isOpen, onClose }) => {
       <div className="modal-content info-modal" onClick={e => e.stopPropagation()}>
         <h2>このツールについて</h2>
         <p>
-          CogniVocabは、科学的根拠（FSRS理論・インターリービング学習）に基づいた、
-          完全無料・オフライン対応の次世代英単語学習アプリケーションです。
+          CogniVocabは、科学的根拠に基づいた、完全無料・オフライン対応の英単語学習アプリです。
         </p>
         
-        <h3>OSSライセンス / 使用ライブラリ</h3>
-        <p>本アプリは以下のオープンソースソフトウェアを使用しています。</p>
-        <ul className="oss-list">
-          <li><strong>React</strong> (MIT)</li>
-          <li><strong>Vite</strong> (MIT)</li>
-          <li><strong>Dexie.js</strong> (Apache-2.0) - IndexedDB Wrapper</li>
-          <li><strong>ts-fsrs</strong> (MIT) - Spaced Repetition Algorithm</li>
-          <li><strong>Workbox</strong> (MIT) - PWA Support</li>
-        </ul>
+        <div className="legal-section">
+          <div className="legal-title">オープンソースソフトウェア (OSS)</div>
+          <p className="legal-text">
+            本サービスは、React, Vite, Dexie.js, ts-fsrs などの素晴らしいオープンソースソフトウェアによって支えられています。
+          </p>
+        </div>
 
-        <h3>データソース</h3>
-        <ul className="oss-list">
-          <li><strong>NGSL/NAWL</strong> (CC BY-SA 4.0)</li>
-          <li><strong>Tatoeba Project</strong> (CC BY 2.0 FR)</li>
-          <li><strong>Kaikki.org (Wiktionary)</strong> (CC BY-SA 3.0)</li>
-        </ul>
+        <div className="legal-section">
+          <div className="legal-title">利用規約</div>
+          <p className="legal-text">
+            本サービスは無料で提供されており、学習効果を保証するものではありません。
+            ユーザーの学習データは、ブラウザ内に安全に保存され、同期機能を使用する場合のみサーバーへ暗号化して送信されます。
+            サービスの内容は予告なく変更される場合があります。
+          </p>
+        </div>
 
-        <button className="modal-close-button" onClick={onClose}>閉じる</button>
+        <div className="legal-section">
+          <div className="legal-title">プライバシーポリシー</div>
+          <p className="legal-text">
+            私たちは「Local-First」アーキテクチャを採用しており、ユーザーのプライバシーを最優先に設計しています。
+            個人を特定できる情報は、アカウント管理とデータ同期の目的以外には使用しません。
+            また、学習データの分析は、サービスの品質向上のために匿名化された状態でのみ行われます。
+            Google Analytics等によるアクセス解析を行っています。
+          </p>
+        </div>
+
+        <div style={{ marginTop: '20px', textAlign: 'center' }}>
+          <button className="modal-close-button" onClick={onClose}>閉じる</button>
+        </div>
       </div>
     </div>
   );

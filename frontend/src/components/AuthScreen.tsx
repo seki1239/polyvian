@@ -30,6 +30,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLoginSuccess }) => {
       const data = await response.json();
 
       if (response.ok) {
+        localStorage.setItem('user_id', data.user.id); // ユーザーIDを保存
         onLoginSuccess(data.user, data.token);
       } else {
         setError(data.message || '認証に失敗しました。');
